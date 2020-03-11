@@ -1,7 +1,6 @@
 /**
  * https://leetcode-cn.com/problems/diameter-of-binary-tree/
  */
-
 class TreeNode {
       int val;
       TreeNode left;
