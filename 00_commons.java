@@ -16,7 +16,7 @@ class TreeNode {
 	 * 配列是对树的广度搜索，从上到下，从左到右，空分支用null
 	 */
 	TreeNode(Integer[] itree){
-	    System.out.println("buildTree() itree=" + Arrays.toString(itree));
+	    //System.out.println("buildTree() itree=" + Arrays.toString(itree));
 	    if(itree.length>0){
     	    Queue<TreeNode> todo = new ArrayDeque<TreeNode>();
     	    val = itree[0];
@@ -46,7 +46,7 @@ class TreeNode {
                     todo.add(tmp);
     	        }
     	        pos++;
-    	        System.out.println("tree=" + this);
+    	        //System.out.println("tree=" + this);
     	    }
 	    }
 	}
@@ -69,9 +69,9 @@ class TreeNode {
         while(todo.size()>0){
             TreeNode cnd = todo.remove(); // current node
             if(cnd.nullflg){
-                ret += "null,";
+                ret += "null/";
             }else{
-                ret += cnd.val + ",";
+                ret += cnd.val + "/";
             }
             if(cnd.left==null && cnd.right==null){
                 // do nothing
