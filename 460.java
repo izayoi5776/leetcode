@@ -7,35 +7,66 @@ https://leetcode-cn.com/problems/lfu-cache/
 import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
+//import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.Comparator;
 //import java.util.LinkedHashMap;
 
-class Rec{
+class Rec implements Comparable{
     int key;
     int value;
-    boolean getflg = false;  // get flag
-    Rec prev;
-    Rec next;
+    int cnt;    // access counter
+    int tm;   // last access time
     Rec(int key, int value){
         this.key = key;
         this.value = value;
     }
-    String printTree(){
-        String ret = "(" + key + "," + value + "," + (getflg?"T":"F") + "," + (prev==null?"N":prev.key) + "," + (next==null?"N":next.key) +")";
-        if(next!=null){
-            ret += "/" + next.printTree();
-        }
+    public String toString(){
+        return "(" + key + "/" + value + "/" + cnt + "/" + tm + ")";
+    }
+    @Override
+    public int compareTo(Object o){
+        Rec r = (Rec)o;
+        int ret = (cnt==r.cnt ? tm - r.tm : cnt - r.cnt);
+        //int ret = (cnt==r.cnt ? r.tm - tm : r.cnt - cnt);
+        //System.out.println("compareTo(" + this + "," + r + ")=" + ret);
         return ret;
     }
 }
 class LFUCache {
-    Map<Integer, Rec> m = new HashMap<Integer, Rec>();
+    Map<Integer, Rec> m = null;    // key 检索用
+    TreeMap<Rec, Integer> m2 = null;    // 排序用
+    
     int capacity = 0;
-    Rec head = null;    // 真的开头
-    Rec tail = null;    // 结尾
-    Rec ins  = null;    // 插入点
+    int tm = 0;
 
     public LFUCache(int capacity) {
         this.capacity = capacity;
+        m = new HashMap<Integer, Rec>();
+        /*m2 = new TreeMap<Rec, Integer>(new Comparator<Rec>(){
+            public int compare(Rec o1, Rec o2){
+                int ret = 0;
+                if(o1==null && o2==null){
+                    // ret = 0;
+                }else if(o1==null){
+                    ret = -1;
+                }else if(o2==null){
+                    ret = 1;
+                }else if(o1.cnt > o2.cnt){
+                    ret = 1;
+                }else if(o1.cnt < o2.cnt){
+                    ret = -1;    
+                // o1.cnt == o2.cnt
+                }else if(o1.tm > o2.tm){
+                    ret = 1;
+                }else if(o1.tm < o2.tm){
+                    ret = -1;
+                }
+                System.out.println("compare(" + o1 + "," + o2 + ")=" + ret);
+                return ret;
+            }
+        });*/
+        m2 = new TreeMap<Rec, Integer>();
         //System.out.println("LFUCache() called cap=" + capacity + " m=" + m);
     }
     
@@ -43,31 +74,13 @@ class LFUCache {
         int ret = -1;
         if(m.containsKey(key)){
             Rec r = m.get(key);
-            r.getflg = true;
-            if(head!=r){
-                Rec rp = r.prev;
-                Rec rn = r.next;
-                if(rp!=null){rp.next = rn;}
-                if(rn!=null){rn.prev = rp;}
-
-                if(ins==r){
-                    ins=rn;
-                }    
-                if(tail==r){
-                    tail=rp;
-                }
-
-                r.next = head;
-                r.prev = null;
-                head.prev = r;
-                head = r;
-            }else{
-                if(ins==r){
-                    ins = r.next;    
-                }
-            }
+            m2.remove(r);  // TreeMap 的排序索引不能改变，想改就删掉重新添加
             ret = r.value;
+            r.cnt++;
+            r.tm = this.tm;
+            m2.put(r, key);
         }
+        this.tm++;
         printStatus("LFUCache::get(" + key + ")=" + ret);
         return ret;
     }
@@ -75,124 +88,38 @@ class LFUCache {
     public void put(int key, int value) {
         if(m.containsKey(key)){
             Rec r = m.get(key);
-            if(r.value==value){
-                // 值不变不需要追加
-            }else{
-                r.getflg = false;
-                r.value = value;
-                m.put(key, r);
-
-                if(head==r){
-                    // do nothing
-                }else{
-                    if(!r.getflg){
-                        if(ins != r){
-                            Rec rp = r.prev;
-                            Rec rn = r.next;
-                            if(rp!=null){rp.next = rn;}
-                            if(rn!=null){rn.prev = rp;}
-                            if(tail==r){tail = rp;}
-                            if(head==ins){head=r;}
-        
-                            r.next = ins;
-                            r.prev = ins.prev;
-                            if(ins.prev!=null){
-                                ins.prev.next=r;
-                            }
-                            ins.prev = r;
-                            ins = r;
-                        }
-                    }
-                }
-            }
+            m2.remove(r);
+            r.value = value;
+            r.cnt++;
+            r.tm = this.tm;
+            m2.put(r, key);
         }else{
             if(chkCap()){
                 Rec r = new Rec(key, value);
-                if(head==null){
-                    head = r;
-                }
-                if(tail==null){
-                    tail = r;
-                }
-                if(ins==null){
-                    ins = r;    // 指向最新插入的记录
-                    if(tail!=null && tail != r){
-                        tail.next = r;
-                        r.prev = tail;
-                    }
-                    tail = r;
-                }else{
-                    Rec rp = ins.prev;
-                    if(rp!=null){rp.next = r;}
-                    r.prev = rp;
-    
-                    if(head==ins){
-                        head = r;
-                    }
-    
-                    ins.prev = r;
-                    r.next = ins;
-    
-                    ins = r;
-                }
+                r.tm = this.tm;
                 m.put(key, r);
+                m2.put(r, key);
             }
         }
+        this.tm++;
         printStatus("LFUCache::put(" + key + "," + value + ")");
     }
     boolean chkCap(){
-        if(m.size() > capacity -1){
-            if(tail!=null){
-                printStatus("LFUCache::chkCap() size()=" + m.size() + ">" + (capacity - 1) + " REMOVE ");
-                m.remove(tail.key);
-                if(head==tail){
-                    head = null;
-                    tail = null;
-                    ins = null;
-                }else{
-                    if(ins==tail){
-                        ins = null;
-                    }
-                    if(tail.prev!=null){
-                        tail = tail.prev;
-                        tail.next = null;
-                    }
-                }
-            }
+        if(m2.size() > 0 && m2.size() > capacity -1){
+            Rec r = m2.firstKey();
+            //Rec r = m2.lastKey();
+            int t = m2.get(r);
+            printStatus("LFUCache::chkCap() REMOVE r=" + r);
+            m.remove(r.key);
+            m2.remove(r);
         }
         printStatus("LFUCache::chkCap()");
-        return m.size() < capacity;
+        return m2.size() < capacity;
     }
-    // 删除一项
-    void remove(int key){
-        if(m.containsKey(key)){
-            Rec r = m.get(key);
-            m.remove(r);
-            if(head==r){
-                head = r.next;
-            }
-            if(ins==r){
-                ins = r.next;
-            }
-            if(tail==r){
-                tail = r.prev;
-            }
-            
-            Rec rp = r.prev;
-            Rec rn = r.next;
-            if(rp!=null){rp.next = rn;}
-            if(rn!=null){rn.prev = rp;}
-        }
-    }
+
     void printStatus(String s){
-        if(true){
-            String shead = null;
-            String sins = null;
-            String stail = null;
-            if(head!=null){shead = head.printTree();}
-            if(ins!=null){sins = ins.printTree();}
-            if(tail!=null){stail = tail.printTree();}
-            System.out.println(s + " keys=" + m.keySet() + " head=" + shead + " ins=" + sins + " tail=" + stail);
+        if(false){
+            System.out.println("" + this.tm + " " + s + " m=" + m + " m2=" + m2);
         }
     }
 }
