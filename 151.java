@@ -5,9 +5,18 @@ https://leetcode-cn.com/problems/reverse-words-in-a-string/
 
 *******************************************************************************/
 import java.util.Arrays;
+import java.util.Collections;
 
 class Solution {
+    // stream版
     public String reverseWords(String s) {
+        return Arrays.stream(s.split(" +"))
+            .filter(o->o.length()>0)
+            .reduce((ret, o)->o.concat(" ").concat(ret))
+            .orElse("");
+    }
+    // 正常版
+    public String reverseWords1(String s) {
         String ret = "";
         String[] sa = s.split(" +");
         for(int i=sa.length-1; i>=0; i--){
@@ -34,7 +43,7 @@ public class Main
     static void tbase(String s, String expect){
 	    Solution o = new Solution();
 	    String ret = o.reverseWords(s);
-	    System.out.println("s" + s + " ret=[" + ret + "] expect=[" + expect + "]"+ (chk(ret,expect)?" OK":" NG"));
+	    System.out.println("s=" + s + " ret=[" + ret + "] expect=[" + expect + "]"+ (chk(ret,expect)?" OK":" NG"));
 	}
 	static boolean chk(String youret, String expect){
 	    return youret.equals(expect);
@@ -49,5 +58,3 @@ public class Main
 	    tbase("a good   example", "example good a");
 	}
 }
-
-
