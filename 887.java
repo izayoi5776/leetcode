@@ -13,69 +13,36 @@ import java.util.Collections;
 
 class Solution {
     Map<String, Integer> mp = new HashMap<>();
-    Map<String, Integer> mpos = new HashMap<>(); // DEBUG 找到最小值的位置
     public int superEggDrop(int K, int N) {
-        int ret = 0;
-        ret = chk(K, N);
-        //System.out.println("K=" + K + " N=" + N + " mpos=" + mpos);
+        int ret = 1;
+        while(chk(K, ret)<N){
+            //System.out.println("K=" + K + " N=" + N + " ret=" + ret + " mp=" + mp);
+            ret++;
+        }
+
         return ret;
     }
-    // N 从 1 开始
-    int chk(int K, int N){
-        //System.out.println("in  K=" + K + " N=" + N);
+    // K, step 步可以占据的最大空间
+    int chk(int K, int step){
+        //System.out.println("in  K=" + K + " step=" + step);
         int ret = 0;
-        String key = "" + K + "_" + N;
-        if(K<=1 || (K>=1 && N<=2)){
+        String key = "" + K + "_" + step;
+        if(K<1){
+            // ret = 0;
+        }else if(K==1 || (K>=1 && step<2)){
             // 出口条件
-            ret = Math.max(0, N);
+            ret = Math.max(0, step);
         }else if(mp.containsKey(key)){
             // 计算过的流用
             ret = mp.get(key);
         }else{
-            int min = Integer.MAX_VALUE;
-            List<Integer> ls = new ArrayList<>();
-            // 扫描大部分可能的分割方式 N/4-N/2 TODO要证明
-            //for(int i=Math.max(2,N/4-1); i<=N/2+1;i++){
-            for(int i=2; i<=N/2+1;i++){
-                int up = chk(K, N-i);       // 上半, 所有鸡蛋都能用
-                int dn = chk(K-1, i-1);     // 下半，摔少了一个鸡蛋
-                int rt = Math.max(up, dn);  // 较大的值是这种分割下需要的次数
-                //ls.add(rt);
-                if(rt < min){
-                    min = rt;
-                    mpos.put(key, i);
-                }
-                //System.out.println("K=" + K + " N=" + N + " i=" + i + " ls=" + ls + " mp=" + mp);
-                
-            }
-            ret = 1;
-            //if(ls.size()>0){
-            //    ret = 1 + Collections.min(ls);
-            //}
-            if(min < Integer.MAX_VALUE){
-                ret = 1 + min;
-            }
-            /*
-            // 只算中间1种，TODO要证明
-            {
-                int i= (int)Math.ceil(N/2.0);
-                int up = chk(K, N-i);       // 上半, 所有鸡蛋都能用
-                int dn = chk(K-1, i-1);     // 下半，摔少了一个鸡蛋
-                int rt1 = Math.max(up, dn) + 1;  // 较大的值是这种分割下需要的次数
-
-                int i2= N/2;
-                int rt2 = rt1;
-                if(i2!=i){
-                    int up2 = chk(K, N-i2);       // 上半, 所有鸡蛋都能用
-                    int dn2 = chk(K-1, i2-1);     // 下半，摔少了一个鸡蛋
-                    rt2 = Math.max(up2, dn2) + 1;  // 较大的值是这种分割下需要的次数
-                }
-                ret = Math.min(rt1, rt2);
-            }*/
-            
+            int up = chk(K, step-1);      // 上半, 所有鸡蛋都能用
+            int dn = chk(K-1, step-1);    // 下半，鸡蛋少一个
+            ret = up + dn + 1;        // 一共占据的位置
+            //System.out.println("K=" + K + " N=" + N + " i=" + i + " ls=" + ls + " mp=" + mp);
             mp.put(key,ret);
         }
-        //System.out.println("out K=" + K + " N=" + N + " ret=" + ret + " mp=" + mp);
+        //System.out.println("out K=" + K + " step=" + step + " ret=" + ret + " mp=" + mp);
         //System.out.println("out K=" + K + " N=" + N + " ret=" + ret);
         return ret;
     }
@@ -93,7 +60,11 @@ public class Main
 		t7();
 		t8();
 		t9();
-		//t10();
+		t10();
+		t11();
+		t12();
+		t13();
+		t14();
 	}
     static void tbase(int K, int N, int expect){
 	    System.out.println("-------------------------");
@@ -129,5 +100,16 @@ public class Main
 	
 	// timeout
 	static void t10(){tbase(4, 10000, 23);}
+	
+	// K > log_2^N 二分法就行。因为有0，所以exp(2,5)不够用
+	static void t11(){tbase(8, 32, 6);}
+	// 所以要算 N+1 的对数
+	static void t12(){tbase(8, 31, 5);}
+	// 对数个鸡蛋就正好够用
+	static void t13(){tbase(5, 31, 5);}
+	// 鸡蛋少了一个，就要再省下一个挨个实验，就是32，16，8，4。这时候3个鸡蛋用完，剩下4个逐个数。所以最坏 3+4 =7
+	// 可是实际是6，为什么呢？
+	// 
+	static void t14(){tbase(4, 31, 6);}
 
 }
