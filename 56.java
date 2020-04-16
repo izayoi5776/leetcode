@@ -85,7 +85,29 @@ public class Main
 	    System.out.println("intervals=" + Arrays.deepToString(intervals) + " ret=" + Arrays.deepToString(ret) + " expect=" + Arrays.deepToString(expect) + (chk(ret,expect)?" OK":" NG"));
 	}
 	static boolean chk(int[][] youret, int[][] expect){
-	    return Arrays.deepEquals(youret, expect);
+	    boolean ret = false;
+	    if(youret.length==expect.length){
+	        ret = true;
+    	    for(int i=0; i<youret.length; i++){
+    	        int[] a = youret[i];
+    	        boolean found = false;
+    	        for(int j=0; j<expect.length; j++){
+    	            found = false;
+    	            int[] b = expect[j];
+    	            if(a[0]==b[0] && a[1]==b[1]){
+    	                found = true;
+    	                //System.out.println("FOUND a=" +  Arrays.toString(a) + " b=" +  Arrays.toString(b));
+    	                break;
+    	            }
+    	        }
+    	        if(!found){
+    	            //System.out.println("NOT FOUND a=" + Arrays.toString(a));
+    	            ret = false;
+    	            break;
+    	        }
+    	    }
+	    }
+	    return ret;
 	}
 	static void t1(){
 	    tbase(new int[][]{{1,3},{2,6},{8,10},{15,18}}, new int[][]{{1,6},{8,10},{15,18}});
