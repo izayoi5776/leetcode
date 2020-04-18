@@ -1,3 +1,12 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
 class TreeNode {
     int val;
     boolean nullflg = false;
@@ -60,7 +69,7 @@ class TreeNode {
 	    }
 	    return ret;
 	}
-	// 广度优先打印
+    // 广度优先打印
     public String toString(){
         Queue<TreeNode> todo = new ArrayDeque<TreeNode>();
         String ret = "";
@@ -68,27 +77,27 @@ class TreeNode {
 
         while(todo.size()>0){
             TreeNode cnd = todo.remove(); // current node
-            if(cnd.nullflg){
-                ret += "null/";
+            if(cnd.val==-1){
+                ret += "_/";
             }else{
                 ret += cnd.val + "/";
             }
-            if(cnd.left==null && cnd.right==null){
+            //if(cnd.left==null && cnd.right==null){
                 // do nothing
-            }else{
+            //}else{
+            if(cnd.val!=-1){
                 if(cnd.left==null){
-                    todo.add(new TreeNode());
+                    todo.add(new TreeNode(-1));
                 }else{
                     todo.add(cnd.left);
                 }
                 if(cnd.right==null){
-                    todo.add(new TreeNode());
+                    todo.add(new TreeNode(-1));
                 }else{
                     todo.add(cnd.right);
                 }
             }
         }
-
         return ret;
-    }	
+    }
 }
