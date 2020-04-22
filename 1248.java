@@ -7,7 +7,44 @@ https://leetcode-cn.com/problems/count-number-of-nice-subarrays/
 import java.util.Arrays;
 
 class Solution {
+    // 写一个简单暴力版，先不考虑速度
     public int numberOfSubarrays(int[] nums, int k) {
+        int ret =0;
+        if(nums!=null && nums.length>0 && k>0){
+            int[] v = new int[nums.length];  // 0偶数，1奇数
+            for(int i=0; i<nums.length; i++){
+                v[i] = nums[i] % 2;
+            }
+            
+            // 子串从 i 开始位置
+            for(int i=0; i<v.length; i++){
+                // 字串结束位置，含
+                for(int j=i+k-1; j<v.length; j++){
+                    if(chkodd(v, i, j, k)){
+                        ret++;
+                    }
+                }
+            } 
+        }
+        return ret;
+    }
+    // 奇数个数确认, 开始位置，终了位置（含），指定奇数个数k
+    boolean chkodd(int[] v, int start, int end, int k){
+        boolean ret = false;
+        if(v!=null && start>=0 && start <= end && end<v.length && k>0){
+            int sum = 0;
+            for(int i=start; i<=end; i++){
+                sum += v[i];
+                if(sum>k){
+                    break;
+                }
+            }
+            ret = sum==k;
+        }
+        return ret;
+    }
+    // ======================================
+    public int numberOfSubarrays1(int[] nums, int k) {
         int ret = 0;
         
         // 把奇数个数放在奇数位，偶数个数放在偶数位，没有放0，最初0是偶数
@@ -90,8 +127,8 @@ class Solution {
 public class Main
 {
 	public static void main(String[] args) {
-		//t1();
-		//t2();
+		t1();
+		t2();
 		t3();
 	}
     static void tbase(int[] nums, int k, int expect){
