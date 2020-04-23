@@ -101,3 +101,42 @@ class TreeNode {
         return ret;
     }
 }
+
+
+
+/******************************************************************************
+
+面试题 08.11. 硬币
+https://leetcode-cn.com/problems/coin-lcci/
+
+*******************************************************************************/
+import java.util.Arrays;
+
+class Solution {
+    public int waysToChange(int n) {
+        int ret = 0;
+        return ret;
+    }
+}
+
+public class Main
+{
+	public static void main(String[] args) {
+		t1();
+	}
+    static void tbase(int n, int expect){
+	    Solution o = new Solution();
+	    int ret = o.waysToChange(n);
+	    System.out.println("n=" + n + " ret=" + ret + " expect=" + expect + (chk(ret,expect)?" OK":" NG"));
+	}
+	static boolean chk(String youret, String expect){
+	    return youret.equals(expect);
+	}
+	static boolean chk(int youret, int expect){
+	    return youret==expect;
+	}
+
+	static void t1(){
+	    tbase(5, 2);
+	}
+}
