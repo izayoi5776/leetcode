@@ -10,8 +10,9 @@ import java.util.TreeMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
-// 双链表，从后向前
+// 双链表
 class Rec implements Comparable<Rec>{
     int val;
     Rec before;
@@ -30,12 +31,12 @@ class Solution {
     public int reversePairs(int[] nums) {
         int ret = 0;
         
-        ret = chk2(nums);
+        ret = chk3(nums);
         
         return ret;
     }
     // 简单算算看
-    int chk(int[] nums){
+    int chk1(int[] nums){
         int ret = 0;
         for(int i=0; i<nums.length-1; i++){
             for(int j=i+1; j<nums.length; j++){
@@ -85,19 +86,52 @@ class Solution {
         }
         return ret;
     }
+    // 就相当于sort，所以一定有logN等级的算法
+    // 更慢，case 35都过不去。
+    int chk3(int[] nums){
+        int ret = 0;
+        boolean changeFlg = true;
+        int tmp = 0;
+        if(nums!=null && nums.length>1){
+            while(changeFlg){
+                changeFlg = false;
+                for(int i=0; i<nums.length-1; i++){
+                    if(nums[i] > nums[i+1]){
+                        changeFlg=true;
+                        ret++;
+                        tmp = nums[i];
+                        nums[i] = nums[i+1];
+                        nums[i+1] = tmp;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
 }
 
 public class Main
 {
 	public static void main(String[] args) {
-		//t1();
+		t1();
 		//t2();
 		t3();
+		t4();
 	}
     static void tbase(int[] nums, int expect){
 	    Solution o = new Solution();
 	    int ret = o.reversePairs(nums);
 	    System.out.println("nums=" + Arrays.toString(nums) + " ret=" + ret + " expect=" + expect + (chk(ret,expect)?" OK":" NG"));
+	}
+	static void tbase(int[] nums){
+	    Solution o = new Solution();
+	    long tm1 = System.nanoTime();
+	    int expect = o.chk1(nums);
+	    long tm2 = System.nanoTime();
+	    int ret = o.reversePairs(nums);
+	    long tm3 = System.nanoTime();
+	    System.out.println("nums.length=" + nums.length + " ret=" + ret + " expect=" + expect + (chk(ret,expect)?" OK":" NG"));
+	    System.out.printf("ref-time=%,d ret-time=%,d\n", (tm2 - tm1), (tm3-tm2));
 	}
 	static boolean chk(String youret, String expect){
 	    return youret.equals(expect);
@@ -121,5 +155,15 @@ public class Main
 	static void t3(){
 	    tbase(new int[]{2147483647,2147483647,-2147483647,-2147483647,-2147483647,2147483647}, 6);
 	}
-	
+	static void t4(){
+	    Random rd = new Random();
+	    int sz = 10000;
+	    int[] nums = new int[sz];
+        for(int i=0; i<sz; i++){
+            nums[i] = rd.nextInt(sz);
+        }
+	    tbase(nums);
+	}
 }
+
+
