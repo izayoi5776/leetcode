@@ -106,16 +106,17 @@ class TreeNode {
 
 /******************************************************************************
 
-面试题 08.11. 硬币
-https://leetcode-cn.com/problems/coin-lcci/
+title
+url
 
 *******************************************************************************/
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 class Solution {
-    public int waysToChange(int n) {
-        int ret = 0;
-        return ret;
+    public int[] twoSum(int[] numbers, int target) {
+        return numbers;
     }
 }
 
@@ -124,10 +125,11 @@ public class Main
 	public static void main(String[] args) {
 		t1();
 	}
-    static void tbase(int n, int expect){
+    static void tbase(int[] p1, int p2, int[] expect){
+		System.out.println("--------------------");
 	    Solution o = new Solution();
-	    int ret = o.waysToChange(n);
-	    System.out.println("n=" + n + " ret=" + ret + " expect=" + expect + (chk(ret,expect)?" OK":" NG"));
+	    int[] ret = o.twoSum(p1, p2);
+	    System.out.printf("tbase(%s, %s, %s)=%s %s\n", s(p1), s(p2), s(expect), s(ret), (chk(ret,expect)?" OK":" NG"));
 	}
 	static boolean chk(String youret, String expect){
 	    return youret.equals(expect);
@@ -135,8 +137,21 @@ public class Main
 	static boolean chk(int youret, int expect){
 	    return youret==expect;
 	}
-
+	static <T> boolean chk(T youret, T expect){
+	    return youret.equals(expect);
+	}
+	static boolean chk(int[] youret, int[] expect){
+	    return Arrays.equals(youret, expect);
+	}
+	static String s(int n){
+	    return "" + n;
+	}
+	static String s(int[] n){
+	    return "" + Arrays.toString(n);
+	}
 	static void t1(){
-	    tbase(5, 2);
+	    tbase(new int[]{2, 7, 11, 15}, 9, new int[]{1,2});
+	    
 	}
 }
+
