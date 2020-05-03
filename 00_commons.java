@@ -106,30 +106,68 @@ class TreeNode {
 
 /******************************************************************************
 
-title
-url
+53. 最大子序和
+https://leetcode-cn.com/problems/maximum-subarray/
 
 *******************************************************************************/
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+//import java.lang.reflect.Field;
+//import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 
 class Solution {
-    public int[] twoSum(int[] numbers, int target) {
-        return numbers;
+    public int maxSubArray(int[] nums) {
+        int ret = Integer.MIN_VALUE;    // 空数组的情况题目没有定义
+        
+        if(nums!=null && nums.length>0){
+            for(int i=0; i<nums.length; i++){
+                long sum = 0L;
+                for(int j=i; j<nums.length; j++){
+                    sum += nums[j];
+                    if(sum>ret){
+                        ret = (int)sum;
+                    }
+                }
+            }
+        }
+        //System.out.printf("maxSubArray(%s)=%d\n", Arrays.toString(nums), ret);
+        return ret;
     }
 }
 
+// -------------------------------------------------------
 public class Main
 {
 	public static void main(String[] args) {
 		t1();
 	}
-    static void tbase(int[] p1, int p2, int[] expect){
+	/*static void tbase1(int[] p1, int expect){
 		System.out.println("--------------------");
 	    Solution o = new Solution();
-	    int[] ret = o.twoSum(p1, p2);
-	    System.out.printf("tbase(%s, %s, %s)=%s %s\n", s(p1), s(p2), s(expect), s(ret), (chk(ret,expect)?" OK":" NG"));
+	    int ret = o.maxSubArray(p1);
+	    System.out.printf("tbase(%s, %s)=%s %s\n", s(p1), s(expect), s(ret), (chk(ret,expect)?" OK":" NG"));
+	}*/
+	// 用反射调用就不需要每次改代码了
+	static void tbase(int[] p1, int expect){
+		System.out.println("--------------------");
+	    Solution o = new Solution();
+	    Class cls = Solution.class;
+	    Object ret = null;
+        for(Method me : cls.getMethods()){
+            // 只要Solution中的方法，应该只有一个
+            if(me.getDeclaringClass()==cls){
+                //System.out.println("call " + me + " getGenericReturnType()=" + me.getGenericReturnType());
+                try{
+                    ret = me.invoke(o, p1);
+                    System.out.printf("tbase(%s, %s)=%s %s\n", s(p1), s(expect), s(ret), (chk(ret,expect)?" OK":" NG"));
+                }catch(Exception ex){
+                    ex.printStackTrace();
+                }
+            }
+        }
+
 	}
 	static boolean chk(String youret, String expect){
 	    return youret.equals(expect);
@@ -143,15 +181,15 @@ public class Main
 	static boolean chk(int[] youret, int[] expect){
 	    return Arrays.equals(youret, expect);
 	}
-	static String s(int n){
-	    return "" + n;
-	}
-	static String s(int[] n){
-	    return "" + Arrays.toString(n);
-	}
+	static String s(int n){	    return "" + n;	}
+	static <T> T s(T n){	    return n;	}
+	static String s(int[] n){	    return "" + Arrays.toString(n);	}
+	
 	static void t1(){
-	    tbase(new int[]{2, 7, 11, 15}, 9, new int[]{1,2});
-	    
+	    tbase(new int[]{-2,1,-3,4,-1,2,1,-5,4}, 6);
+	    tbase(new int[]{}, 0);
+	    tbase(new int[]{0,0,0,0}, 0);
+	    tbase(new int[]{-1,-2,-3}, -1);
 	}
+	
 }
-
