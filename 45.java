@@ -13,36 +13,35 @@ import java.util.Map;
 import java.util.HashMap;
 
 class Solution {
-    Map<Integer, Integer> mp = new HashMap<>();
     public int jump(int[] nums) {
-        int ret = -1;
-        ret = chk(nums, 0);
-        return ret;
-    }
-    private int chk(int[] nums, int pos){
-        //System.out.printf("I N chk(%s, %d) mp=%s\n", Arrays.toString(nums), pos, mp);
-        int ret = -1;
-        if(mp.containsKey(pos)){
-            ret = mp.get(pos);
-        }else{
-            if(nums!=null && pos<nums.length){
-                if(pos==nums.length-1){
-                    ret = 0;
-                }else if(pos + nums[pos] >= nums.length){
-                    ret = 1;
+        int ret = 0;
+        if(nums!=null && nums.length>0){
+            int pos = 0;
+            out:while(pos<nums.length-1){
+                if(pos + nums[pos]>=nums.length-1){
+                    ret++;
+                    break;
                 }else{
-                    for(int i=1; i<=nums[pos]; i++){
-                        int sub = chk(nums, pos+i);
-                        if(sub!=-1 &&(ret==-1 || sub + 1 < ret)){
-                            ret = sub + 1;
+                    int pos2Max = 0;
+                    int posNext = 0;
+                    for(int i=pos+1; i<=pos+nums[pos]; i++){
+                        if(i>=nums.length){
+                            ret++;
+                            break;
+                        }else{
+                            int pos2 = i + nums[i];
+                            if(pos2 > pos2Max){
+                                pos2Max = pos2;
+                                posNext = i;
+                            }
+                            //System.out.printf("nums=%s pos=%d i=%d pos2Max=%d posNext=%d ret=%d\n", Arrays.toString(nums), pos, i, pos2Max, posNext, ret);
                         }
-                        //System.out.printf("MID chk(%s, %d)=%d i=%d mp=%s\n", Arrays.toString(nums), pos, ret, i, mp);
                     }
+                    pos = posNext;
+                    ret++;
                 }
             }
-            mp.put(pos, ret);
         }
-        //System.out.printf("OUT chk(%s, %d)=%d mp=%s\n", Arrays.toString(nums), pos, ret, mp);
         return ret;
     }
 }
@@ -98,7 +97,7 @@ public class Main
 	}
 	static void t1(){
 	    tbase(2, new int[]{2,3,1,1,4});
-	    tbase(0, new int[]{});
+	    tbase(-1, new int[]{});
 	    tbase(0, new int[]{1});
 	    tbase(1, new int[]{3,2,1,0});
 	    tbase(2, new int[]{3,0,3,0,0,0});
