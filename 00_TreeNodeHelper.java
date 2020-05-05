@@ -4,15 +4,25 @@ import java.util.ArrayDeque;
 
 /**
  * Definition for a binary tree node.
- * 这里删除掉 public 以方便和其他代码放在同一 java 文件中
  */
 class TreeNode {
-	int val;
-	TreeNode left;
-	TreeNode right;
-	TreeNode(int x) { val = x; }
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int x) { val = x; }
+    
+    // -------------
+    TreeNode(Integer[] nds){
+        TreeNode nd = TreeNodeHelper.buildTree(nds);
+        this.val = nd.val;
+        this.left = nd.left;
+        this.right = nd.right;
+    }
+    public String toString(){
+        return TreeNodeHelper.toString(this);
+    }
 }
-
+ 
 class TreeNodeHelper {
 	/**
 	 * 通过输入的配列初始化一棵二叉树
