@@ -1,4 +1,3 @@
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,9 +31,16 @@ public class Main
 	}
 	static     boolean chk(String youret, String expect){	    return youret.equals(expect);	}
 	static     boolean chk(int    youret, int    expect){	    return youret==expect;	}
-	static <T> boolean chk(T      youret, T      expect){	    return youret.equals(expect);	}
 	static     boolean chk(int[]  youret, int[]  expect){	    return Arrays.equals(youret, expect);	}
-
+	static <T> boolean chk(T      youret, T      expect){
+	    boolean ret = false;
+	    if(youret!=null){
+	        ret = youret.equals(expect);
+	    }else if(youret==expect){
+	        ret = true;
+	    }
+	    return ret;
+	}
 	static <T> String  s(T n)    {
 	    if(n instanceof int[]){
 	        return Arrays.toString((int[])n);
@@ -52,5 +58,4 @@ public class Main
 	    tbase(null, new int[]{1,2}, 2);
 
 	}
-	
 }
