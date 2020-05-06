@@ -17,12 +17,14 @@ public class Main
             // 只要Solution中的方法，应该只有一个
             if(me.getDeclaringClass()==cls){
                 try{
+                    long tm1 = System.nanoTime();
                     ret = me.invoke(o, args);
+                    long tm2 = System.nanoTime();
                     System.out.printf("tbase(%s", s(expect));
                     for(Object ag : args){
                         System.out.printf(", %s", s(ag));
                     }
-                    System.out.printf(")=%s %s\n", s(ret), chk(ret, expect)?"OK":"NG");
+                    System.out.printf(")=%s time:%,d ns %s\n", s(ret), tm2-tm1, chk(ret, expect)?"OK":"NG");
                 }catch(Exception ex){
                     ex.printStackTrace();
                 }
@@ -31,7 +33,6 @@ public class Main
 	}
 	static     boolean chk(String youret, String expect){	    return youret.equals(expect);	}
 	static     boolean chk(int    youret, int    expect){	    return youret==expect;	}
-	//static     boolean chk(int[]  youret, int[]  expect){	    return Arrays.equals(youret, expect);	}
 	static <T> boolean chk(T      youret, T      expect){
 	    boolean ret = false;
 	    if(youret!=null){
