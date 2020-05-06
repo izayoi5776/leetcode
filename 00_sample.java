@@ -31,11 +31,15 @@ public class Main
 	}
 	static     boolean chk(String youret, String expect){	    return youret.equals(expect);	}
 	static     boolean chk(int    youret, int    expect){	    return youret==expect;	}
-	static     boolean chk(int[]  youret, int[]  expect){	    return Arrays.equals(youret, expect);	}
+	//static     boolean chk(int[]  youret, int[]  expect){	    return Arrays.equals(youret, expect);	}
 	static <T> boolean chk(T      youret, T      expect){
 	    boolean ret = false;
 	    if(youret!=null){
-	        ret = youret.equals(expect);
+	        if(youret instanceof int[]){
+	            ret = Arrays.equals((int[])youret, (int[])expect);
+	        }else{
+	            ret = youret.equals(expect);    
+	        }
 	    }else if(youret==expect){
 	        ret = true;
 	    }
