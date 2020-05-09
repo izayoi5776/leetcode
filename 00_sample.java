@@ -49,6 +49,8 @@ public class Main
 	static <T> String  s(T n)    {
 	    if(n instanceof int[]){
 	        return Arrays.toString((int[])n);
+	    }else if(n instanceof int[][]){
+	        return Arrays.deepToString((int[][])n);
 	    }else{
     	    return "" + n;	
 	    }
