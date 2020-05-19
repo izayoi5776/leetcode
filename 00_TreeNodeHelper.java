@@ -21,8 +21,29 @@ class TreeNode {
     public String toString(){
         return TreeNodeHelper.toString(this);
     }
+    @Override
+    public int hashCode(){
+        return super.hashCode();
+    }
+    @Override
+    public boolean equals(Object b){
+        boolean ret = false;
+        if(b!=null){
+            TreeNode nd = (TreeNode)b;
+            if(this.val!=nd.val){
+                // ret=false;
+            }else{
+                boolean retl = left==null ? (nd.left ==null ? true : false) : this.left.equals(nd.left);
+                boolean retr = right==null? (nd.right==null ? true : false) : this.right.equals(nd.right);
+                if(retl && retr){
+                    ret=true;
+                }
+            }
+        }
+        return ret;
+    }
 }
- 
+
 class TreeNodeHelper {
 	/**
 	 * 通过输入的配列初始化一棵二叉树
