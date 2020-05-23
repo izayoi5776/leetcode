@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.lang.reflect.*;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
 class Solution {
     Map<Character, List<Integer>> mps = new HashMap<>();   // char in s, positions
@@ -46,97 +47,96 @@ class Solution {
                 break;
             }
         }
-        //System.out.printf("minWindow(%s, %s) flg=%b mpt.ketSet()=%s\n", s, t, flg, mpt.keySet().stream().toArray((sz)->new Character[sz]));
+        //System.out.printf("minWindow(%s, %s) flg=%b\n", s, t, flg);
         
-        //Map<Character, Integer> mpchk = new HashMap<>();   // char in t, start pos in mps
+        Map<Character, Integer> mpchk = new HashMap<>();   // char in t, start pos in mps
         if(flg){
-            //String loopkeys = mpt.keySet().stream().map(i->""+i).collect(Collectors.joining(""));
-            //Character loopkeys[] = mpt.keySet().stream().toArray((sz)->new Character[sz]);
-            int n = mpt.keySet().size();
-            char[] loopkeys = new char[n];
-            int[] loopvars = new int[n];
-            int[] mptvals = new int[n];
-            int[][] mpsvals = new int[n][];
-            int[] looplims = new int[n];
-            initLoop(loopkeys, loopvars, mptvals, looplims, mpsvals);
-
-            int[] minpos = new int[2];
-            int minlen = Integer.MAX_VALUE;
+            Map<Character, Integer> loopvar = initLoop(); // loop contral. key=char in t, val=start pos in mps
+            List<Integer> minpos = null;
+            int minlen = s.length()+1;
             do{
-                int[] poss = getPos(loopkeys, loopvars, mpsvals, mptvals);
-                int len = poss[1] - poss[0] + 1;
+                List<Integer> poss = getPos(loopvar);
+                int len = getStrLen2(poss);
                 if(len < minlen){
                     minlen = len;
                     minpos = poss;
                 }
-            }while(chkLoop(loopkeys, loopvars, looplims));
+            }while(chkLoop(loopvar));
             
-            System.out.printf("minWindow(%s, %s)=%s minlen=%d minpos=%s\n", s, t, ret, minlen, Arrays.toString(minpos));
-            if(minlen>0 && minlen<=s.length()){
-                ret = s.substring(minpos[0], minpos[1]+1);    
+            //System.out.printf("minWindow(%s, %s)=%s minlen=%d minpos=%s\n", s, t, ret, minlen, minpos);
+            if(minpos.size()>0){
+                ret = s.substring(minpos.get(0), minpos.get(0)+minlen);    
             }
+            
         }
 
         return ret;
     }
     // init loop control var
-    void initLoop(char[] loopkeys, int[] loopvars, int[] mptvals, int[] looplims, int[][] mpsvals){
-        int i=0;
+    Map<Character, Integer> initLoop(){
+        Map<Character, Integer> ret = new HashMap<>();
         for(char c : mpt.keySet()){
-            loopkeys[i] = c;
-            loopvars[i] = 0;    // not necessary
-            mptvals[i]  = mpt.get(c);
-            List<Integer> ls = mps.get(c);
-            mpsvals[i] = ls.stream().mapToInt(j->j).toArray();
-            looplims[i] = ls.size() - mpt.get(c);
-            i++;
+            ret.put(c, 0);
         }
         //System.out.printf("initLoop()=%s\n", ret);
+        return ret;
     }
     // 从现在循环中取得位置信息
-    //int[] getPos(Map<Character, Integer> loopvar){
-    int[] getPos(char[] loopkeys, int[] loopvars, int[][] mpsvals, int[] mptvals){
-        int[] ret = new int[2];
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        for(int i=0; i<loopkeys.length; i++){
-            //char c = loopkeys[i];
-            int pos  = loopvars[i];
-            //List<Integer> ls = mps.get(c);
-            int need = mptvals[i];
-            for(int j=0; j<need; j++){
-                int n = mpsvals[i][pos+j];
-                min = Math.min(min, n);
-                max = Math.max(max, n);
+    List<Integer> getPos(Map<Character, Integer> loopvar){
+        List<Integer> ret = new ArrayList<>();
+        for(char c : loopvar.keySet()){
+            int pos  = loopvar.get(c);
+            List<Integer> ls = mps.get(c);
+            int need = mpt.get(c);
+            for(int i=0; i<need; i++){
+                ret.add(ls.get(pos+i));
             }
         }
         //System.out.printf("getPos(%s)=%s\n", loopvar, ret);
-        ret[0] = min;
-        ret[1] = max;
         return ret;
     }
     // 循环增1操作，结束则返回false
-    //boolean chkLoop(Map<Character, Integer> loopvar){
-    boolean chkLoop(char[] loopkeys, int[] loopvars, int[] looplims){
+    boolean chkLoop(Map<Character, Integer> loopvar){
         boolean ret = false; // 可以继续循环标志。如果有人增1之后还可以，就设置为true
-        //System.out.printf("IN chkLoop(%s, %s, %s)\n", Arrays.toString(loopkeys), Arrays.toString(loopvars), Arrays.toString(looplims));
-        for(int i=0; i<loopkeys.length; i++){
-            //char c = loopkeys[i];
-            int curpos = loopvars[i];
-            //int need = mpt.get(c);
-            int loopmax = looplims[i];
+        //System.out.printf("IN chkLoop(%s)=%b\n", loopvar, ret);
+        for(char c : loopvar.keySet()){
+            int curpos = loopvar.get(c);
+            int need = mpt.get(c);
+            int loopmax = mps.get(c).size() - need;
             if(curpos<loopmax){
                 curpos++;
-                loopvars[i] = curpos;
+                loopvar.put(c, curpos);
                 ret=true;
-                //System.out.printf("   chkLoop(%s, %s, %s)=%b curpos=%d\n", Arrays.toString(loopkeys), Arrays.toString(loopvars), Arrays.toString(looplims), ret, curpos);
+                //System.out.printf("   chkLoop(%s)=%b\n", loopvar, ret);
                 break;
             }else{
-                loopvars[i]=0;
-                //System.out.printf("   chkLoop(%s, %s, %s)=%b curpos=%d\n", Arrays.toString(loopkeys), Arrays.toString(loopvars), Arrays.toString(looplims), ret, curpos);
+                curpos=0;
+                loopvar.put(c, curpos);
+                //System.out.printf("   chkLoop(%s)=%b\n", loopvar, ret);
             }
         }
-        System.out.printf("   chkLoop(%s, %s, %s)=%b\n", Arrays.toString(loopkeys), Arrays.toString(loopvars), Arrays.toString(looplims), ret);
+        return ret;
+    }
+    // 返回子串长度
+    int getStrLen(List<Integer> pos){
+        Integer[] a = new Integer[pos.size()];
+        pos.toArray(a);
+        Arrays.sort(a);
+        int min = a[0];
+        int max = a[a.length-1];
+        int ret = max - min + 1;
+        //System.out.printf("getStrLen(%s)=%d a=%s\n", pos, ret, Arrays.toString(a));
+        return ret;
+    }
+    int getStrLen2(List<Integer> pos){
+        int ret = 0;
+        if(pos!=null && pos.size()>0){
+            Collections.sort(pos);
+            int min = pos.get(0);
+            int max = pos.get(pos.size()-1);
+            ret = max - min + 1;
+        }
+        //System.out.printf("getStrLen2(%s)=%d\n", pos, ret);
         return ret;
     }
 }
@@ -206,17 +206,7 @@ public class Main
 		tbase("a", "a", "a");   // 1 of 268
 		tbase("", "", "");
 	}
-    /**
-     * timeout 45 of 268
-     * 初始版，用List循环，并且取得所有pos
-     * time:47,581,238,563 ns
-     * 位置返回值从List变成固定的int[2]
-     * time:17,159,043,433 ns
-     * 循环变量变成配列
-     * time:10,057,293,651 ns
-     * 所有变量都变成配列
-     * time:2,278,649,394 ns
-     */
+	// timeout
 	static void t3(){
         tbase("sk_not_what_your_c", "ask_not_what_your_country_can_do_for_you_ask_what_you_can_do_for_your_country", "ask_country");
     }
