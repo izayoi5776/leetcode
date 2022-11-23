@@ -1,7 +1,5 @@
 package leetcode;
 
-import java.util.Arrays;
-
 // 495. van提莫攻击
 public class L495 {
 	public class Solution {
